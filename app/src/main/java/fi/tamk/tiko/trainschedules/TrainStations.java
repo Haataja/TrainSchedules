@@ -15,8 +15,10 @@ import android.widget.Toast;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -102,7 +104,8 @@ public class TrainStations extends AppCompatActivity {
 
                 int myChar;
                 StringBuilder stringBuilder = new StringBuilder();
-                while ((myChar = in.read()) != -1){
+                BufferedReader br = new BufferedReader(new InputStreamReader(in, "utf8"));
+                while ((myChar = br.read()) != -1){
                     stringBuilder.append((char) myChar);
                 }
                 resultString = stringBuilder.toString();
