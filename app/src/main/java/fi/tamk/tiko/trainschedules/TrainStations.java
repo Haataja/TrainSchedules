@@ -2,12 +2,16 @@ package fi.tamk.tiko.trainschedules;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,31 +29,36 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class TrainStations extends AppCompatActivity {
-    private RecyclerView recyclerView;
-    private RecyclerView.Adapter mAdapter;
-    private RecyclerView.LayoutManager layoutManager;
+public class TrainStations extends Fragment {
+    private static RecyclerView recyclerView;
+    private static RecyclerView.Adapter mAdapter;
+    private static RecyclerView.LayoutManager layoutManager;
     private static Context context;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_train_stations);
-        recyclerView = findViewById(R.id.trainStations);
-        context = getApplicationContext();
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.activity_train_stations, container, false);
+        recyclerView = view.findViewById(R.id.trainStations);
+        context = getActivity().getApplicationContext();
 
         recyclerView.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
 
-        mAdapter = new MyAdapter(new ArrayList<TrainStation>());
+        mAdapter = new MyAdapter(new ArrayList<>());
         recyclerView.setAdapter(mAdapter);
 
         new AsyncFetch().execute();
+        return view;
     }
 
-
-    class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+    static class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private List<TrainStation> dataSet;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -57,6 +66,14 @@ public class TrainStations extends AppCompatActivity {
             public MyViewHolder(TextView v) {
                 super(v);
                 textView = v;
+                textView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        String string = ((TextView) v).getText().toString();
+                        Log.d(this.getClass().getName(),"Textview Clicked: " + string);
+                        //Intent intent = new Intent();
+                    }
+                });
             }
         }
 
@@ -65,7 +82,6 @@ public class TrainStations extends AppCompatActivity {
             this.dataSet = dataSet;
         }
 
-        // Create new views (invoked by the layout manager)
         @Override
         public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                          int viewType) {
@@ -89,7 +105,7 @@ public class TrainStations extends AppCompatActivity {
         }
     }
 
-    public class AsyncFetch extends AsyncTask<String, String, List<TrainStation>> {
+    public static class AsyncFetch extends AsyncTask<String, String, List<TrainStation>> {
         private InputStream in = null;
         private String BASE_URL = "https://rata.digitraffic.fi/api/v1";
 
@@ -100,7 +116,6 @@ public class TrainStations extends AppCompatActivity {
                 URL url = new URL(BASE_URL + "/metadata/stations");
                 HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
                 in = connection.getInputStream();
-                onProgressUpdate("here!");
 
                 int myChar;
                 StringBuilder stringBuilder = new StringBuilder();
@@ -109,7 +124,6 @@ public class TrainStations extends AppCompatActivity {
                     stringBuilder.append((char) myChar);
                 }
                 resultString = stringBuilder.toString();
-                onProgressUpdate("here again!");
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
@@ -123,7 +137,6 @@ public class TrainStations extends AppCompatActivity {
             }
             ObjectMapper mapper = new ObjectMapper();
             List<TrainStation> stations = null;
-            onProgressUpdate("mapping still!");
             try {
                 stations = mapper.readValue(resultString, new TypeReference<List<TrainStation>>(){});
             } catch (IOException e) {
@@ -133,11 +146,6 @@ public class TrainStations extends AppCompatActivity {
             return stations;
         }
 
-        @Override
-        protected void onProgressUpdate(String... values) {
-            super.onProgressUpdate(values);
-            Log.i(this.getClass().getName(),"HELLO! " + values[0] );
-        }
 
         @Override
         protected void onPostExecute(List<TrainStation> stations) {
