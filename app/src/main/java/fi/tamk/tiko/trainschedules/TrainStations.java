@@ -5,7 +5,6 @@ import android.os.AsyncTask;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -34,10 +33,12 @@ public class TrainStations extends Fragment {
     private static RecyclerView.Adapter mAdapter;
     private static RecyclerView.LayoutManager layoutManager;
     private static Context context;
+    private static ChosenStation callBack;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        callBack = (ChosenStation) getActivity();
     }
 
     @Nullable
@@ -63,6 +64,7 @@ public class TrainStations extends Fragment {
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
             public TextView textView;
+
             public MyViewHolder(TextView v) {
                 super(v);
                 textView = v;
@@ -70,8 +72,8 @@ public class TrainStations extends Fragment {
                     @Override
                     public void onClick(View v) {
                         String string = ((TextView) v).getText().toString();
-                        Log.d(this.getClass().getName(),"Textview Clicked: " + string);
-                        //Intent intent = new Intent();
+                        Log.d(this.getClass().getName(), "Textview Clicked: " + string);
+                        callBack.itemSelected(string);
                     }
                 });
             }
@@ -82,6 +84,7 @@ public class TrainStations extends Fragment {
             this.dataSet = dataSet;
         }
 
+        // todo: change to linear layout?
         @Override
         public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                          int viewType) {
@@ -120,14 +123,14 @@ public class TrainStations extends Fragment {
                 int myChar;
                 StringBuilder stringBuilder = new StringBuilder();
                 BufferedReader br = new BufferedReader(new InputStreamReader(in, "utf8"));
-                while ((myChar = br.read()) != -1){
+                while ((myChar = br.read()) != -1) {
                     stringBuilder.append((char) myChar);
                 }
                 resultString = stringBuilder.toString();
             } catch (IOException e) {
                 e.printStackTrace();
             } finally {
-                if(in!= null){
+                if (in != null) {
                     try {
                         in.close();
                     } catch (IOException e) {
@@ -138,7 +141,8 @@ public class TrainStations extends Fragment {
             ObjectMapper mapper = new ObjectMapper();
             List<TrainStation> stations = null;
             try {
-                stations = mapper.readValue(resultString, new TypeReference<List<TrainStation>>(){});
+                stations = mapper.readValue(resultString, new TypeReference<List<TrainStation>>() {
+                });
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -149,10 +153,10 @@ public class TrainStations extends Fragment {
 
         @Override
         protected void onPostExecute(List<TrainStation> stations) {
-            if(stations != null){
-                List<TrainStation> newStations= new ArrayList<>();
-                for(int i = 0; i < stations.size(); i++){
-                    if(stations.get(i).isPassengerTraffic()){
+            if (stations != null) {
+                List<TrainStation> newStations = new ArrayList<>();
+                for (int i = 0; i < stations.size(); i++) {
+                    if (stations.get(i).isPassengerTraffic()) {
                         newStations.add(stations.get(i));
                     }
                 }

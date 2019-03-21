@@ -16,11 +16,8 @@ public class BoardActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        /*String name = getIntent().getExtras().getString("name");
-        int id = getIntent().getExtras().getInt("id");
-
-        TriggerSoundSetupFragment fragment = (TriggerSoundSetupFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentRight);
-        fragment.setName(name);
-        fragment.setSoundID(id);*/
+        String name = getIntent().getExtras().getString("name");
+        BoardFragment fragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentRight);
+        fragment.setStation(name);
     }
 }

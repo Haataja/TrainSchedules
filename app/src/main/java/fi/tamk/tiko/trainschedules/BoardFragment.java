@@ -24,4 +24,8 @@ public class BoardFragment extends Fragment {
         Log.i(this.getClass().getName(), "Refreshing!!");
         srl.setRefreshing(false);
     }
+
+    public void setStation(String station){
+        Log.d(this.getClass().getName(), "In Board Fragment: " + station);
+    }
 }
