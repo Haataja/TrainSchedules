@@ -1,11 +1,18 @@
 package fi.tamk.tiko.trainschedules.model;
 
+import android.os.Build;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class Train {
+public class Train  implements Comparable<Train>{
     private int trainNumber;
     private String trainType;
     private String trainCategory;
@@ -69,5 +76,14 @@ public class Train {
 
     public void setDestination(String destination) {
         this.destination = destination;
+    }
+
+
+    @Override
+    public int compareTo(Train o) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            return getTimeTableRows().get(0).getScheduledTime().compareTo(o.getTimeTableRows().get(0).getScheduledTime());
+        }
+        return 0;
     }
 }

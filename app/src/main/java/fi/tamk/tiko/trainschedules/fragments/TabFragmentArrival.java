@@ -25,7 +25,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -35,13 +37,13 @@ import fi.tamk.tiko.trainschedules.model.TimeTableRow;
 import fi.tamk.tiko.trainschedules.model.Train;
 
 public class TabFragmentArrival extends Fragment {
-
+    private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
     private static RecyclerView recyclerView;
     private static RecyclerView.Adapter mAdapter;
     private static RecyclerView.LayoutManager layoutManager;
     private static Context context;
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.board_fragment, container, false);
         recyclerView = view.findViewById(R.id.board_fragment);
         context = getActivity().getApplicationContext();
@@ -56,7 +58,7 @@ public class TabFragmentArrival extends Fragment {
         return view;
     }
 
-    public void triggerFetch(String station){
+    public void triggerFetch(String station) {
         new AsyncFetch().execute(station);
     }
 
@@ -94,12 +96,22 @@ public class TabFragmentArrival extends Fragment {
         public void onBindViewHolder(TabViewHolder holder, int position) {
             Train train = dataSet.get(position);
             String trainNumber = train.getTrainType() + " " + train.getTrainNumber();
-            if(train.getTrainCategory().equalsIgnoreCase("Commuter")){
+            if (train.getTrainCategory().equalsIgnoreCase("Commuter")) {
                 trainNumber = train.getCommuterLineID();
             }
-            ((TextView)holder.textView.findViewById(R.id.train)).setText(trainNumber);
-            ((TextView)holder.textView.findViewById(R.id.destination)).setText(train.getDestination());
-            ((TextView)holder.textView.findViewById(R.id.track)).setText(train.getTimeTableRows().get(0).getCommercialTrack());
+            ((TextView) holder.textView.findViewById(R.id.train)).setText(trainNumber);
+            ((TextView) holder.textView.findViewById(R.id.destination)).setText(train.getDestination());
+            if (train.getTimeTableRows() != null && train.getTimeTableRows().size() > 0) {
+                Log.d(this.getClass().getName(), "TimeTableRows = " + train.getTimeTableRows().size());
+                ((TextView) holder.textView.findViewById(R.id.track)).setText(train.getTimeTableRows().get(0).getCommercialTrack());
+                String time = train.getTimeTableRows().get(0).getScheduledTime().format(formatter);
+                ((TextView) holder.textView.findViewById(R.id.time)).setText(time);
+                if (train.getTimeTableRows().get(0).getLiveEstimateTime() != null) {
+                    String estTime = train.getTimeTableRows().get(0).getLiveEstimateTime().format(formatter);
+                    ((TextView) holder.textView.findViewById(R.id.notice)).setText(estTime);
+                }
+            }
+
 
             Log.d(this.getClass().getName(), "setting" + trainNumber);
 
@@ -153,7 +165,7 @@ public class TabFragmentArrival extends Fragment {
                     }
                 }
             }
-            Log.d(this.getClass().getName(), "Mapping" );
+            Log.d(this.getClass().getName(), "Mapping");
             List<Train> trains = parseTrains(resultString, string[0]);
 
             Log.d(this.getClass().getName(), "Mapping" + trains);
@@ -164,38 +176,46 @@ public class TabFragmentArrival extends Fragment {
             List<Train> trains = new ArrayList<>();
             try {
                 JSONArray reader = new JSONArray(resultString);
-                for(int i = 0; i < reader.length(); i++){
+                for (int i = 0; i < reader.length(); i++) {
                     JSONObject o = reader.getJSONObject(i);
-                    Train train = new Train(o.getInt("trainNumber"),o.getString("trainType"),o.getString("trainCategory"),o.getString("commuterLineID"));
-                    JSONArray timetableArray = o.getJSONArray("timeTableRows");
-                    ArrayList<TimeTableRow> timeTableRows = new ArrayList<>();
-                    for(int j = 0; j < timetableArray.length(); j++){
-                        JSONObject timetableObject = timetableArray.getJSONObject(j);
-                        if(timetableObject.getString("stationShortCode").equalsIgnoreCase(station)){
-                            TimeTableRow ttr = new TimeTableRow(timetableObject.getString("stationShortCode"),
-                                    timetableObject.getString("type"),
-                                    timetableObject.getString("commercialTrack"),
-                                    timetableObject.getBoolean("cancelled"));
-                            String sched = timetableObject.getString("scheduledTime");
-                            ttr.setScheduledTime(sched);
-                            String live = null;
-                            try{
-                                live = timetableObject.getString("liveEstimateTime");
-                            }catch (JSONException e){
+                    if (!o.getString("trainCategory").equalsIgnoreCase("cargo")) {
+                        Train train = new Train(o.getInt("trainNumber"), o.getString("trainType"), o.getString("trainCategory"), o.getString("commuterLineID"));
+                        JSONArray timetableArray = o.getJSONArray("timeTableRows");
+                        ArrayList<TimeTableRow> timeTableRows = new ArrayList<>();
+                        for (int j = 0; j < timetableArray.length(); j++) {
+                            JSONObject timetableObject = timetableArray.getJSONObject(j);
+                            if (timetableObject.getString("stationShortCode").equalsIgnoreCase(station) &&
+                                    timetableObject.getString("type").equalsIgnoreCase("ARRIVAL")
+                                    && timetableObject.getBoolean("commercialStop")) {
+                                TimeTableRow ttr = new TimeTableRow(timetableObject.getString("stationShortCode"),
+                                        timetableObject.getString("type"),
+                                        timetableObject.getString("commercialTrack"),
+                                        timetableObject.getBoolean("cancelled"));
+                                String sched = timetableObject.getString("scheduledTime");
+                                ttr.setScheduledTime(sched);
+                                String live = null;
+                                int diff = 0;
+                                try {
+                                    live = timetableObject.getString("liveEstimateTime");
+                                    diff = timetableObject.getInt("differenceInMinutes");
+                                } catch (JSONException e) {
+                                    // if not found don't do anything
+                                }
+                                if (live != null && diff != 0) {
+                                    ttr.setLiveEstimateTime(live);
+                                }
+                                timeTableRows.add(ttr);
+                            }
 
+                            if (j == 0) {
+                                train.setDestination(timetableObject.getString("stationShortCode"));
                             }
-                            if(live != null){
-                                ttr.setLiveEstimateTime(live);
-                            }
-                            timeTableRows.add(ttr);
                         }
-
-                        if(j == timetableArray.length() - 1){
-                            train.setDestination(timetableObject.getString("stationShortCode"));
+                        if (timeTableRows.size() > 0) {
+                            train.setTimeTableRows(timeTableRows);
+                            trains.add(train);
                         }
                     }
-                    train.setTimeTableRows(timeTableRows);
-                    trains.add(train);
                 }
 
             } catch (JSONException e) {
@@ -208,6 +228,7 @@ public class TabFragmentArrival extends Fragment {
         @Override
         protected void onPostExecute(List<Train> trains) {
             if (trains != null) {
+                Collections.sort(trains);
                 mAdapter = new TabRecycleViewAdapter(trains);
                 recyclerView.setAdapter(mAdapter);
 

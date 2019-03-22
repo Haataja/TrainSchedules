@@ -1,17 +1,25 @@
 package fi.tamk.tiko.trainschedules.model;
 
+import android.os.Build;
+import android.support.annotation.RequiresApi;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 
+@RequiresApi(api = Build.VERSION_CODES.O)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class TimeTableRow {
+    private DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
     private String stationShortCode;
     private String type; // arrival vs departure
     private String commercialTrack;
     private boolean cancelled;
-    private String scheduledTime;
-    private String liveEstimateTime;
+    private LocalDateTime scheduledTime;
+    private LocalDateTime liveEstimateTime;
 
     public TimeTableRow() {
     }
@@ -55,21 +63,27 @@ public class TimeTableRow {
         this.cancelled = cancelled;
     }
 
-    public String getScheduledTime() {
+    public LocalDateTime getScheduledTime() {
         return scheduledTime;
     }
 
     public void setScheduledTime(String scheduledTime) {
-        String time = scheduledTime.split("T")[1].substring(0,5);
-        this.scheduledTime = time;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LocalDateTime localDateTime = LocalDateTime.parse(scheduledTime, formatter);
+
+            this.scheduledTime =localDateTime.atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.of("Europe/Helsinki")).toLocalDateTime();
+        }
     }
 
-    public String getLiveEstimateTime() {
+    public LocalDateTime getLiveEstimateTime() {
         return liveEstimateTime;
     }
 
     public void setLiveEstimateTime(String liveEstimateTime) {
-        String time = liveEstimateTime.split("T")[1].substring(0,5);
-        this.liveEstimateTime = time;
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            LocalDateTime localDateTime = LocalDateTime.parse(liveEstimateTime, formatter);
+            this.liveEstimateTime = localDateTime.atZone(ZoneId.of("UTC")).withZoneSameInstant(ZoneId.of("Europe/Helsinki")).toLocalDateTime();
+        }
     }
 }
