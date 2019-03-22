@@ -1,4 +1,4 @@
-package fi.tamk.tiko.trainschedules;
+package fi.tamk.tiko.trainschedules.fragments;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -16,6 +16,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import fi.tamk.tiko.trainschedules.R;
 
 public class TabFragment extends Fragment {
 

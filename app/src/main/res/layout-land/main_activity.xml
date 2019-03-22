@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/fragmentLeft"
-        android:name="fi.tamk.tiko.trainschedules.TrainStations"
+        android:name="fi.tamk.tiko.trainschedules.fragments.TrainStations"
         android:layout_width="0dp"
         android:layout_weight="5"
         android:layout_height="match_parent"
@@ -15,7 +15,7 @@
 
     <fragment
         android:id="@+id/fragmentRight"
-        android:name="fi.tamk.tiko.trainschedules.BoardFragment"
+        android:name="fi.tamk.tiko.trainschedules.fragments.BoardFragment"
         android:layout_width="0dp"
         android:layout_weight="6"
         android:layout_height="match_parent"

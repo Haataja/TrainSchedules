@@ -1,4 +1,4 @@
-package fi.tamk.tiko.trainschedules;
+package fi.tamk.tiko.trainschedules.model;
 
 public class TrainStation {
     private boolean passengerTraffic;
