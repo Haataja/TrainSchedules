@@ -24,7 +24,7 @@ public class BoardFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
+    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.board_view, container, false);
         srl = view.findViewById(R.id.swiperefreshBoard);
         srl.setOnRefreshListener(() -> refresh());
@@ -32,10 +32,10 @@ public class BoardFragment extends Fragment {
         viewPager = view.findViewById(R.id.viewPager);
         tabLayout = view.findViewById(R.id.tabLayout);
         adapter = new TabAdapter(getActivity().getSupportFragmentManager());
-        adapter.addFragment(new TabFragment(), "Lahtevat");
-        adapter.addFragment(new TabFragment(), "Saapuvat");
-
+        adapter.addFragment(new TabFragmentDeparture(), "Lahtevat");
+        adapter.addFragment(new TabFragmentArrival(), "Saapuvat");
         viewPager.setAdapter(adapter);
+
         tabLayout.setupWithViewPager(viewPager);
 
         return view;
@@ -43,20 +43,23 @@ public class BoardFragment extends Fragment {
 
     private void refresh() {
         Log.i(this.getClass().getName(), "Refreshing!! " + stationCode);
-        if(stationCode != null){
-            Log.d(this.getClass().getName(), "wht is this? " + viewPager.getCurrentItem());
-            TabFragment fragment = (TabFragment) adapter.getItem(viewPager.getCurrentItem());
+        if (stationCode != null) {
+            TabFragmentDeparture fragment = (TabFragmentDeparture) adapter.getItem(0);
             fragment.triggerFetch(stationCode);
+
+            TabFragmentArrival fragment1 = (TabFragmentArrival) adapter.getItem(1);
+            fragment1.triggerFetch(stationCode);
+
         }
         srl.setRefreshing(false);
     }
 
-    public void setStation(String station){
+    public void setStation(String station) {
         Log.d(this.getClass().getName(), "In Board Fragment: " + station);
         ((TextView) getView().findViewById(R.id.name)).setText(station);
     }
 
-    public void setStationCode(String stationCode){
+    public void setStationCode(String stationCode) {
         this.stationCode = stationCode;
         refresh();
     }

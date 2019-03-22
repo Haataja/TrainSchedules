@@ -34,7 +34,7 @@ import fi.tamk.tiko.trainschedules.R;
 import fi.tamk.tiko.trainschedules.model.TimeTableRow;
 import fi.tamk.tiko.trainschedules.model.Train;
 
-public class TabFragment extends Fragment {
+public class TabFragmentArrival extends Fragment {
 
     private static RecyclerView recyclerView;
     private static RecyclerView.Adapter mAdapter;
@@ -56,8 +56,8 @@ public class TabFragment extends Fragment {
         return view;
     }
 
-    public void triggerFetch(String string){
-        new AsyncFetch().execute(string);
+    public void triggerFetch(String station){
+        new AsyncFetch().execute(station);
     }
 
 
@@ -98,7 +98,8 @@ public class TabFragment extends Fragment {
                 trainNumber = train.getCommuterLineID();
             }
             ((TextView)holder.textView.findViewById(R.id.train)).setText(trainNumber);
-            ((TextView)holder.textView.findViewById(R.id.track)).setText(dataSet.get(position).getDestination());
+            ((TextView)holder.textView.findViewById(R.id.destination)).setText(train.getDestination());
+            ((TextView)holder.textView.findViewById(R.id.track)).setText(train.getTimeTableRows().get(0).getCommercialTrack());
 
             Log.d(this.getClass().getName(), "setting" + trainNumber);
 
@@ -120,7 +121,7 @@ public class TabFragment extends Fragment {
         }
     }
 
-    public static class AsyncFetch extends AsyncTask<String, String, List<Train>> {
+    public class AsyncFetch extends AsyncTask<String, String, List<Train>> {
         private InputStream in = null;
         private String BASE_URL = "https://rata.digitraffic.fi/api/v1/live-trains/station/";
         private String OPTIONS = "?arrived_trains=0&arriving_trains=100&departed_trains=0&departing_trains=100&include_nonstopping=false";
@@ -153,6 +154,13 @@ public class TabFragment extends Fragment {
                 }
             }
             Log.d(this.getClass().getName(), "Mapping" );
+            List<Train> trains = parseTrains(resultString, string[0]);
+
+            Log.d(this.getClass().getName(), "Mapping" + trains);
+            return trains;
+        }
+
+        private List<Train> parseTrains(String resultString, String station) {
             List<Train> trains = new ArrayList<>();
             try {
                 JSONArray reader = new JSONArray(resultString);
@@ -163,7 +171,7 @@ public class TabFragment extends Fragment {
                     ArrayList<TimeTableRow> timeTableRows = new ArrayList<>();
                     for(int j = 0; j < timetableArray.length(); j++){
                         JSONObject timetableObject = timetableArray.getJSONObject(j);
-                        if(timetableObject.getString("stationShortCode").equalsIgnoreCase(string[0])){
+                        if(timetableObject.getString("stationShortCode").equalsIgnoreCase(station)){
                             TimeTableRow ttr = new TimeTableRow(timetableObject.getString("stationShortCode"),
                                     timetableObject.getString("type"),
                                     timetableObject.getString("commercialTrack"),
@@ -193,7 +201,6 @@ public class TabFragment extends Fragment {
             } catch (JSONException e) {
                 e.printStackTrace();
             }
-            Log.d(this.getClass().getName(), "Mapping" + trains);
             return trains;
         }
 

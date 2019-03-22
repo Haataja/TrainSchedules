@@ -3,6 +3,7 @@ package fi.tamk.tiko.trainschedules;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,6 +27,7 @@ public class TabAdapter extends FragmentStatePagerAdapter {
     }
 
     public void addFragment(Fragment fragment, String title) {
+        Log.d("HERE SHOULD"," BE DIFFERENT FRAGMENTS " + fragment);
         mFragmentList.add(fragment);
         mFragmentTitleList.add(title);
     }
