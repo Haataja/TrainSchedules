@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 public class BoardFragment extends Fragment {
     private SwipeRefreshLayout srl;
@@ -42,5 +43,6 @@ public class BoardFragment extends Fragment {
 
     public void setStation(String station){
         Log.d(this.getClass().getName(), "In Board Fragment: " + station);
+        ((TextView) getView().findViewById(R.id.name)).setText(station);
     }
 }

@@ -12,7 +12,7 @@ import android.view.MenuItem;
 
 
 public class MainActivity extends AppCompatActivity implements ChosenStation {
-    private Menu menu;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -39,20 +39,21 @@ public class MainActivity extends AppCompatActivity implements ChosenStation {
                 return false;
             }
         });
-        this.menu = menu;
         return super.onCreateOptionsMenu(menu);
     }
 
     @Override
-    public void itemSelected(String stationCode) {
+    public void itemSelected(String stationName,String stationCode) {
         BoardFragment fragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentRight);
         Log.d(this.getClass().getName(),"MainActivity: " + fragment);
         Log.d(this.getClass().getName(), "In main activity: " + stationCode);
         if(fragment != null && fragment.getView() != null){
-            fragment.setStation(stationCode);
+            fragment.setStation(stationName);
+            //fragment.setStationCode(stationCode);
         } else {
             Intent intent = new Intent(this, BoardActivity.class);
-            intent.putExtra("name", stationCode);
+            intent.putExtra("name", stationName);
+            intent.putExtra("code", stationCode);
             startActivity(intent);
         }
     }
