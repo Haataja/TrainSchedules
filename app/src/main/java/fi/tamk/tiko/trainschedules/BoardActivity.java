@@ -19,7 +19,9 @@ public class BoardActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         String name = getIntent().getExtras().getString("name");
+        String stationCode =getIntent().getExtras().getString("code");
         BoardFragment fragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentRight);
         fragment.setStation(name);
+        fragment.setStationCode(stationCode);
     }
 }

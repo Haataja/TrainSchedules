@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements ChosenStation {
         Log.d(this.getClass().getName(), "In main activity: " + stationCode);
         if(fragment != null && fragment.getView() != null){
             fragment.setStation(stationName);
-            //fragment.setStationCode(stationCode);
+            fragment.setStationCode(stationCode);
         } else {
             Intent intent = new Intent(this, BoardActivity.class);
             intent.putExtra("name", stationName);

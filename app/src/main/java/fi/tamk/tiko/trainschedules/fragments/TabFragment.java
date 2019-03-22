@@ -1,6 +1,7 @@
 package fi.tamk.tiko.trainschedules.fragments;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -13,11 +14,25 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.ssl.HttpsURLConnection;
+
 import fi.tamk.tiko.trainschedules.R;
+import fi.tamk.tiko.trainschedules.model.TimeTableRow;
+import fi.tamk.tiko.trainschedules.model.Train;
 
 public class TabFragment extends Fragment {
 
@@ -34,23 +49,20 @@ public class TabFragment extends Fragment {
         recyclerView.setHasFixedSize(false);
         layoutManager = new LinearLayoutManager(context);
         recyclerView.setLayoutManager(layoutManager);
-        ArrayList<String> list = new ArrayList<>();
-        list.add("A");
-        list.add("B");
-        list.add("C");
-        list.add("D");
-        list.add("E");
-        list.add("F");
-        list.add("G");
-        mAdapter = new TabRecycleViewAdapter(list);
+
+        mAdapter = new TabRecycleViewAdapter(new ArrayList<>());
         recyclerView.setAdapter(mAdapter);
 
         return view;
     }
 
+    public void triggerFetch(String string){
+        new AsyncFetch().execute(string);
+    }
+
 
     static class TabRecycleViewAdapter extends RecyclerView.Adapter<TabRecycleViewAdapter.TabViewHolder> {
-        private List<String> dataSet;
+        private List<Train> dataSet;
 
         public class TabViewHolder extends RecyclerView.ViewHolder {
 
@@ -63,7 +75,7 @@ public class TabFragment extends Fragment {
         }
 
 
-        public TabRecycleViewAdapter(List<String> dataSet) {
+        public TabRecycleViewAdapter(List<Train> dataSet) {
             this.dataSet = dataSet;
         }
 
@@ -72,7 +84,7 @@ public class TabFragment extends Fragment {
         public TabViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // create a new view
             LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.list_text_view, parent, false);
+                    .inflate(R.layout.board_list_text, parent, false);
             TabViewHolder vh = new TabViewHolder(v);
             return vh;
         }
@@ -80,7 +92,16 @@ public class TabFragment extends Fragment {
 
         @Override
         public void onBindViewHolder(TabViewHolder holder, int position) {
-            ((TextView)holder.textView.findViewById(R.id.stationName)).setText(dataSet.get(position));
+            Train train = dataSet.get(position);
+            String trainNumber = train.getTrainType() + " " + train.getTrainNumber();
+            if(train.getTrainCategory().equalsIgnoreCase("Commuter")){
+                trainNumber = train.getCommuterLineID();
+            }
+            ((TextView)holder.textView.findViewById(R.id.train)).setText(trainNumber);
+            ((TextView)holder.textView.findViewById(R.id.track)).setText(dataSet.get(position).getDestination());
+
+            Log.d(this.getClass().getName(), "setting" + trainNumber);
+
             //((TextView)holder.textView.findViewById(R.id.stationCode)).setText(dataSet.get(position).getStationShortCode());
 
             /*holder.textView.setOnClickListener(new View.OnClickListener() {
@@ -96,6 +117,96 @@ public class TabFragment extends Fragment {
         @Override
         public int getItemCount() {
             return dataSet.size();
+        }
+    }
+
+    public static class AsyncFetch extends AsyncTask<String, String, List<Train>> {
+        private InputStream in = null;
+        private String BASE_URL = "https://rata.digitraffic.fi/api/v1/live-trains/station/";
+        private String OPTIONS = "?arrived_trains=0&arriving_trains=100&departed_trains=0&departing_trains=100&include_nonstopping=false";
+
+
+        @Override
+        protected List<Train> doInBackground(String... string) {
+            String resultString = "";
+            try {
+                URL url = new URL(BASE_URL + string[0] + OPTIONS);
+                HttpsURLConnection connection = (HttpsURLConnection) url.openConnection();
+                in = connection.getInputStream();
+
+                int myChar;
+                StringBuilder stringBuilder = new StringBuilder();
+                BufferedReader br = new BufferedReader(new InputStreamReader(in, "utf8"));
+                while ((myChar = br.read()) != -1) {
+                    stringBuilder.append((char) myChar);
+                }
+                resultString = stringBuilder.toString();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } finally {
+                if (in != null) {
+                    try {
+                        in.close();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+            Log.d(this.getClass().getName(), "Mapping" );
+            List<Train> trains = new ArrayList<>();
+            try {
+                JSONArray reader = new JSONArray(resultString);
+                for(int i = 0; i < reader.length(); i++){
+                    JSONObject o = reader.getJSONObject(i);
+                    Train train = new Train(o.getInt("trainNumber"),o.getString("trainType"),o.getString("trainCategory"),o.getString("commuterLineID"));
+                    JSONArray timetableArray = o.getJSONArray("timeTableRows");
+                    ArrayList<TimeTableRow> timeTableRows = new ArrayList<>();
+                    for(int j = 0; j < timetableArray.length(); j++){
+                        JSONObject timetableObject = timetableArray.getJSONObject(j);
+                        if(timetableObject.getString("stationShortCode").equalsIgnoreCase(string[0])){
+                            TimeTableRow ttr = new TimeTableRow(timetableObject.getString("stationShortCode"),
+                                    timetableObject.getString("type"),
+                                    timetableObject.getString("commercialTrack"),
+                                    timetableObject.getBoolean("cancelled"));
+                            String sched = timetableObject.getString("scheduledTime");
+                            ttr.setScheduledTime(sched);
+                            String live = null;
+                            try{
+                                live = timetableObject.getString("liveEstimateTime");
+                            }catch (JSONException e){
+
+                            }
+                            if(live != null){
+                                ttr.setLiveEstimateTime(live);
+                            }
+                            timeTableRows.add(ttr);
+                        }
+
+                        if(j == timetableArray.length() - 1){
+                            train.setDestination(timetableObject.getString("stationShortCode"));
+                        }
+                    }
+                    train.setTimeTableRows(timeTableRows);
+                    trains.add(train);
+                }
+
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            Log.d(this.getClass().getName(), "Mapping" + trains);
+            return trains;
+        }
+
+
+        @Override
+        protected void onPostExecute(List<Train> trains) {
+            if (trains != null) {
+                mAdapter = new TabRecycleViewAdapter(trains);
+                recyclerView.setAdapter(mAdapter);
+
+            } else {
+                Toast.makeText(context, "NOT FOUND!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

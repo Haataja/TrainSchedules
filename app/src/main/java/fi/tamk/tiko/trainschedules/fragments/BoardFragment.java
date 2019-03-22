@@ -17,6 +17,8 @@ import fi.tamk.tiko.trainschedules.R;
 import fi.tamk.tiko.trainschedules.TabAdapter;
 
 public class BoardFragment extends Fragment {
+    private String stationName;
+    private String stationCode;
     private SwipeRefreshLayout srl;
     private TabAdapter adapter;
     private TabLayout tabLayout;
@@ -25,13 +27,13 @@ public class BoardFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState){
         View view = inflater.inflate(R.layout.board_view, container, false);
         srl = view.findViewById(R.id.swiperefreshBoard);
-        srl.setOnRefreshListener(() -> doSomething());
+        srl.setOnRefreshListener(() -> refresh());
 
         viewPager = view.findViewById(R.id.viewPager);
         tabLayout = view.findViewById(R.id.tabLayout);
         adapter = new TabAdapter(getActivity().getSupportFragmentManager());
-        adapter.addFragment(new TabFragment(), "Tab 1");
-        adapter.addFragment(new TabFragment(), "Tab 2");
+        adapter.addFragment(new TabFragment(), "Lahtevat");
+        adapter.addFragment(new TabFragment(), "Saapuvat");
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
@@ -39,13 +41,23 @@ public class BoardFragment extends Fragment {
         return view;
     }
 
-    private void doSomething() {
-        Log.i(this.getClass().getName(), "Refreshing!!");
+    private void refresh() {
+        Log.i(this.getClass().getName(), "Refreshing!! " + stationCode);
+        if(stationCode != null){
+            Log.d(this.getClass().getName(), "wht is this? " + viewPager.getCurrentItem());
+            TabFragment fragment = (TabFragment) adapter.getItem(viewPager.getCurrentItem());
+            fragment.triggerFetch(stationCode);
+        }
         srl.setRefreshing(false);
     }
 
     public void setStation(String station){
         Log.d(this.getClass().getName(), "In Board Fragment: " + station);
         ((TextView) getView().findViewById(R.id.name)).setText(station);
+    }
+
+    public void setStationCode(String stationCode){
+        this.stationCode = stationCode;
+        refresh();
     }
 }
