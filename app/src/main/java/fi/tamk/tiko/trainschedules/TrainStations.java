@@ -1,7 +1,9 @@
 package fi.tamk.tiko.trainschedules;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -12,6 +14,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -63,19 +66,12 @@ public class TrainStations extends Fragment {
         private List<TrainStation> dataSet;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
-            public TextView textView;
 
-            public MyViewHolder(TextView v) {
+            public LinearLayout textView;
+
+            public MyViewHolder(LinearLayout v) {
                 super(v);
                 textView = v;
-                textView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        String string = ((TextView) v).getText().toString();
-                        Log.d(this.getClass().getName(), "Textview Clicked: " + string);
-                        callBack.itemSelected(string);
-                    }
-                });
             }
         }
 
@@ -84,12 +80,12 @@ public class TrainStations extends Fragment {
             this.dataSet = dataSet;
         }
 
-        // todo: change to linear layout?
+
         @Override
         public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
                                                          int viewType) {
             // create a new view
-            TextView v = (TextView) LayoutInflater.from(parent.getContext())
+            LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_text_view, parent, false);
             MyViewHolder vh = new MyViewHolder(v);
             return vh;
@@ -98,8 +94,18 @@ public class TrainStations extends Fragment {
 
         @Override
         public void onBindViewHolder(MyViewHolder holder, int position) {
-            holder.textView.setText(dataSet.get(position).toString());
+            ((TextView)holder.textView.findViewById(R.id.stationName)).setText(dataSet.get(position).getStationName());
+            ((TextView)holder.textView.findViewById(R.id.stationCode)).setText(dataSet.get(position).getStationShortCode());
 
+            holder.textView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String stationCode = ((TextView) v.findViewById(R.id.stationCode)).getText().toString();
+                    Log.d(this.getClass().getName(), "Textview Clicked: " + stationCode);
+                    callBack.itemSelected(stationCode);
+
+                }
+            });
         }
 
         @Override
