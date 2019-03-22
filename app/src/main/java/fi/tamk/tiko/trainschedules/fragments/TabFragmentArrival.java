@@ -102,7 +102,7 @@ public class TabFragmentArrival extends Fragment {
             ((TextView) holder.textView.findViewById(R.id.train)).setText(trainNumber);
             ((TextView) holder.textView.findViewById(R.id.destination)).setText(train.getDestination());
             if (train.getTimeTableRows() != null && train.getTimeTableRows().size() > 0) {
-                Log.d(this.getClass().getName(), "TimeTableRows = " + train.getTimeTableRows().size());
+                //Log.d(this.getClass().getName(), "TimeTableRows = " + train.getTimeTableRows().size());
                 ((TextView) holder.textView.findViewById(R.id.track)).setText(train.getTimeTableRows().get(0).getCommercialTrack());
                 String time = train.getTimeTableRows().get(0).getScheduledTime().format(formatter);
                 ((TextView) holder.textView.findViewById(R.id.time)).setText(time);
@@ -113,7 +113,7 @@ public class TabFragmentArrival extends Fragment {
             }
 
 
-            Log.d(this.getClass().getName(), "setting" + trainNumber);
+            //Log.d(this.getClass().getName(), "setting" + trainNumber);
 
             //((TextView)holder.textView.findViewById(R.id.stationCode)).setText(dataSet.get(position).getStationShortCode());
 

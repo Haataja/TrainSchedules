@@ -169,10 +169,10 @@ public class TabFragmentDeparture extends Fragment {
                     }
                 }
             }
-            Log.d(this.getClass().getName(), "Mapping");
+            //Log.d(this.getClass().getName(), "Mapping");
             List<Train> trains = parseTrains(resultString, string[0]);
 
-            Log.d(this.getClass().getName(), "Mapping" + trains);
+            //Log.d(this.getClass().getName(), "Mapping" + trains);
             return trains;
         }
 
