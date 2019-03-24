@@ -27,7 +27,6 @@ public class TabAdapter extends FragmentStatePagerAdapter {
     }
 
     public void addFragment(Fragment fragment, String title) {
-        Log.d("HERE SHOULD"," BE DIFFERENT FRAGMENTS " + fragment);
         mFragmentList.add(fragment);
         mFragmentTitleList.add(title);
     }

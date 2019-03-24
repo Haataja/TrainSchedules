@@ -22,11 +22,9 @@ public class MainActivity extends AppCompatActivity implements ChosenStation {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        Log.d(this.getClass().getName(), "Loading menus");
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.main_menu, menu);
         MenuItem searchItem = menu.findItem(R.id.search);
-        Log.d(this.getClass().getName(), "Search item " + searchItem);
 
         SearchView searchView = (SearchView) searchItem.getActionView();
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -46,8 +44,6 @@ public class MainActivity extends AppCompatActivity implements ChosenStation {
     @Override
     public void itemSelected(String stationName,String stationCode) {
         BoardFragment fragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentRight);
-        Log.d(this.getClass().getName(),"MainActivity: " + fragment);
-        Log.d(this.getClass().getName(), "In main activity: " + stationCode);
         if(fragment != null && fragment.getView() != null){
             fragment.setStation(stationName);
             fragment.setStationCode(stationCode);

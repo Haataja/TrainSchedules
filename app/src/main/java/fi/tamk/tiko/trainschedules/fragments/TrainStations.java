@@ -104,7 +104,6 @@ public class TrainStations extends Fragment {
                 public void onClick(View v) {
                     String stationCode = ((TextView) v.findViewById(R.id.stationCode)).getText().toString();
                     String stationName = ((TextView) v.findViewById(R.id.stationName)).getText().toString();
-                    Log.d(this.getClass().getName(), "Textview Clicked: " + stationCode);
                     callBack.itemSelected(stationName,stationCode);
 
                 }

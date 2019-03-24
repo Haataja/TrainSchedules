@@ -55,7 +55,6 @@ public class BoardFragment extends Fragment {
     }
 
     public void setStation(String station) {
-        Log.d(this.getClass().getName(), "In Board Fragment: " + station);
         ((TextView) getView().findViewById(R.id.name)).setText(station);
     }
 

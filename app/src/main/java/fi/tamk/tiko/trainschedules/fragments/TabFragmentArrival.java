@@ -165,10 +165,7 @@ public class TabFragmentArrival extends Fragment {
                     }
                 }
             }
-            Log.d(this.getClass().getName(), "Mapping");
             List<Train> trains = parseTrains(resultString, string[0]);
-
-            Log.d(this.getClass().getName(), "Mapping" + trains);
             return trains;
         }
 
