@@ -1,4 +1,10 @@
 <resources>
     <string name="app_name">Finnish Train Schedules</string>
     <string name="search">TrainSchedules</string>
+    <string name="departureTIme">Lähtöaika</string>
+    <string name="train">Juna</string>
+    <string name="destination">Määränpää</string>
+    <string name="track">Raide</string>
+    <string name="departure">Lähtevät</string>
+    <string name="arrivals">Saapuvat</string>
 </resources>

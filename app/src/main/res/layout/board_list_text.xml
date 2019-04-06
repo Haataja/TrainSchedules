@@ -6,6 +6,13 @@
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_weight="0.5"
+        android:textColor="@color/colorAccent"
+        android:id="@+id/notice"/>
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
         android:layout_weight="1"
         android:id="@+id/time"/>
 
@@ -27,10 +34,5 @@
         android:layout_weight="1"
         android:id="@+id/track"/>
 
-    <TextView
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:textColor="@color/colorAccent"
-        android:id="@+id/notice"/>
+
 </LinearLayout>

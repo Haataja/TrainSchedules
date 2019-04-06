@@ -10,6 +10,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 
 import fi.tamk.tiko.trainschedules.fragments.BoardFragment;
+import fi.tamk.tiko.trainschedules.fragments.TrainStations;
 
 
 public class MainActivity extends AppCompatActivity implements ChosenStation {
@@ -30,12 +31,12 @@ public class MainActivity extends AppCompatActivity implements ChosenStation {
         searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextSubmit(String query) {
-                return false;
+                return true;
             }
 
             @Override
             public boolean onQueryTextChange(String newText) {
-                return false;
+                return true;
             }
         });
         return super.onCreateOptionsMenu(menu);

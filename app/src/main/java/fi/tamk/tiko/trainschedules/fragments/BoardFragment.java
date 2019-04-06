@@ -32,8 +32,8 @@ public class BoardFragment extends Fragment {
         viewPager = view.findViewById(R.id.viewPager);
         tabLayout = view.findViewById(R.id.tabLayout);
         adapter = new TabAdapter(getActivity().getSupportFragmentManager());
-        adapter.addFragment(new TabFragmentDeparture(), "Lahtevat");
-        adapter.addFragment(new TabFragmentArrival(), "Saapuvat");
+        adapter.addFragment(new TabFragmentDeparture(), getString(R.string.departure));
+        adapter.addFragment(new TabFragmentArrival(), getString(R.string.arrivals));
         viewPager.setAdapter(adapter);
 
         tabLayout.setupWithViewPager(viewPager);

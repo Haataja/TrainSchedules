@@ -26,6 +26,8 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import javax.net.ssl.HttpsURLConnection;
 
@@ -39,10 +41,13 @@ public class TrainStations extends Fragment {
     private static RecyclerView.LayoutManager layoutManager;
     private static Context context;
     private static ChosenStation callBack;
+    public static Map<String, String> codeToStation;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        codeToStation = new TreeMap<>();
         callBack = (ChosenStation) getActivity();
     }
 
@@ -64,8 +69,9 @@ public class TrainStations extends Fragment {
         return view;
     }
 
-    static class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+    public static class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private List<TrainStation> dataSet;
+        private List<TrainStation> dataSetCopy;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -80,6 +86,7 @@ public class TrainStations extends Fragment {
 
         public MyAdapter(List<TrainStation> dataSet) {
             this.dataSet = dataSet;
+            this.dataSetCopy = dataSet;
         }
 
 
@@ -99,14 +106,11 @@ public class TrainStations extends Fragment {
             ((TextView)holder.textView.findViewById(R.id.stationName)).setText(dataSet.get(position).getStationName());
             ((TextView)holder.textView.findViewById(R.id.stationCode)).setText(dataSet.get(position).getStationShortCode());
 
-            holder.textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String stationCode = ((TextView) v.findViewById(R.id.stationCode)).getText().toString();
-                    String stationName = ((TextView) v.findViewById(R.id.stationName)).getText().toString();
-                    callBack.itemSelected(stationName,stationCode);
+            holder.textView.setOnClickListener(v -> {
+                String stationCode = ((TextView) v.findViewById(R.id.stationCode)).getText().toString();
+                String stationName = ((TextView) v.findViewById(R.id.stationName)).getText().toString();
+                callBack.itemSelected(stationName,stationCode);
 
-                }
             });
         }
 
@@ -166,6 +170,7 @@ public class TrainStations extends Fragment {
                 for (int i = 0; i < stations.size(); i++) {
                     if (stations.get(i).isPassengerTraffic()) {
                         newStations.add(stations.get(i));
+                        codeToStation.put(stations.get(i).getStationShortCode(),stations.get(i).getStationName());
                     }
                 }
                 mAdapter = new MyAdapter(newStations);

@@ -33,9 +33,11 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
+import fi.tamk.tiko.trainschedules.MainActivity;
 import fi.tamk.tiko.trainschedules.R;
 import fi.tamk.tiko.trainschedules.model.TimeTableRow;
 import fi.tamk.tiko.trainschedules.model.Train;
+import fi.tamk.tiko.trainschedules.model.TrainStation;
 
 public class TabFragmentDeparture extends Fragment {
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
@@ -103,7 +105,7 @@ public class TabFragmentDeparture extends Fragment {
                 trainNumber = train.getCommuterLineID();
             }
             ((TextView) holder.textView.findViewById(R.id.train)).setText(trainNumber);
-            ((TextView) holder.textView.findViewById(R.id.destination)).setText(train.getDestination());
+            ((TextView) holder.textView.findViewById(R.id.destination)).setText(TrainStations.codeToStation.get(train.getDestination()));
             if (train.getTimeTableRows() != null && train.getTimeTableRows().size() > 0) {
                 //Log.d(this.getClass().getName(), "TimeTableRows = " + train.getTimeTableRows().size() );
                 ((TextView) holder.textView.findViewById(R.id.track)).setText(train.getTimeTableRows().get(0).getCommercialTrack());
