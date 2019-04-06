@@ -71,7 +71,6 @@ public class TrainStations extends Fragment {
 
     public static class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
         private List<TrainStation> dataSet;
-        private List<TrainStation> dataSetCopy;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -86,7 +85,7 @@ public class TrainStations extends Fragment {
 
         public MyAdapter(List<TrainStation> dataSet) {
             this.dataSet = dataSet;
-            this.dataSetCopy = dataSet;
+
         }
 
 
@@ -169,6 +168,9 @@ public class TrainStations extends Fragment {
                 List<TrainStation> newStations = new ArrayList<>();
                 for (int i = 0; i < stations.size(); i++) {
                     if (stations.get(i).isPassengerTraffic()) {
+                        if(stations.get(i).getStationName().contains("asema") || stations.get(i).getStationName().contains("Asema")){
+                            stations.get(i).setStationName(stations.get(i).getStationName().split(" ")[0]);
+                        }
                         newStations.add(stations.get(i));
                         codeToStation.put(stations.get(i).getStationShortCode(),stations.get(i).getStationName());
                     }

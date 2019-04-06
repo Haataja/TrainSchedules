@@ -7,4 +7,6 @@
     <string name="track">Raide</string>
     <string name="departure">Lähtevät</string>
     <string name="arrivals">Saapuvat</string>
+    <string name="arrival_time">Saapumisaika</string>
+    <string name="from">Lähtöasema</string>
 </resources>

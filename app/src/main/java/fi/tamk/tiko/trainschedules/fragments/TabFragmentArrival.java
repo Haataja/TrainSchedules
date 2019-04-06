@@ -45,6 +45,9 @@ public class TabFragmentArrival extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.board_fragment, container, false);
+        ((TextView)view.findViewById(R.id.destination)).setText(getString(R.string.from));
+        ((TextView)view.findViewById(R.id.departure_time)).setText(getString(R.string.arrival_time));
+
         recyclerView = view.findViewById(R.id.board_fragment);
         context = getActivity().getApplicationContext();
 
@@ -100,7 +103,7 @@ public class TabFragmentArrival extends Fragment {
                 trainNumber = train.getCommuterLineID();
             }
             ((TextView) holder.textView.findViewById(R.id.train)).setText(trainNumber);
-            ((TextView) holder.textView.findViewById(R.id.destination)).setText(train.getDestination());
+            ((TextView) holder.textView.findViewById(R.id.destination)).setText(TrainStations.codeToStation.get(train.getDestination()));
             if (train.getTimeTableRows() != null && train.getTimeTableRows().size() > 0) {
                 //Log.d(this.getClass().getName(), "TimeTableRows = " + train.getTimeTableRows().size());
                 ((TextView) holder.textView.findViewById(R.id.track)).setText(train.getTimeTableRows().get(0).getCommercialTrack());
