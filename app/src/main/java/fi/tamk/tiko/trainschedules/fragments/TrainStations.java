@@ -12,6 +12,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Filter;
+import android.widget.Filterable;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -44,6 +46,10 @@ public class TrainStations extends Fragment {
     public static Map<String, String> codeToStation;
 
 
+    public static MyAdapter getAdapter() {
+        return (MyAdapter) mAdapter;
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,8 +75,9 @@ public class TrainStations extends Fragment {
         return view;
     }
 
-    public static class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> {
+    public static class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> implements Filterable {
         private List<TrainStation> dataSet;
+        private List<TrainStation> dataSetCopy;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -85,7 +92,39 @@ public class TrainStations extends Fragment {
 
         public MyAdapter(List<TrainStation> dataSet) {
             this.dataSet = dataSet;
+            this.dataSetCopy = dataSet;
+        }
 
+        @Override
+        public Filter getFilter() {
+            return new Filter() {
+                List<TrainStation> contactListFiltered;
+                @Override
+                protected FilterResults performFiltering(CharSequence charSequence) {
+                    String charString = charSequence.toString();
+                    if (charString.isEmpty()) {
+                        contactListFiltered = dataSetCopy;
+                    } else {
+                        List<TrainStation> filteredList = new ArrayList<>();
+                        for (TrainStation row : dataSetCopy) {
+                            if (row.getStationName().toLowerCase().contains(charString.toLowerCase())) {
+                                filteredList.add(row);
+                            }
+                        }
+                        contactListFiltered = filteredList;
+                    }
+
+                    FilterResults filterResults = new FilterResults();
+                    filterResults.values = contactListFiltered;
+                    return filterResults;
+                }
+
+                @Override
+                protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                    dataSet = (ArrayList<TrainStation>) filterResults.values;
+                    notifyDataSetChanged();
+                }
+            };
         }
 
 
