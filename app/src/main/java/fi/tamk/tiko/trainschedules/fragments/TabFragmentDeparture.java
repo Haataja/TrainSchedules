@@ -9,7 +9,6 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,11 +32,9 @@ import java.util.List;
 
 import javax.net.ssl.HttpsURLConnection;
 
-import fi.tamk.tiko.trainschedules.MainActivity;
 import fi.tamk.tiko.trainschedules.R;
 import fi.tamk.tiko.trainschedules.model.TimeTableRow;
 import fi.tamk.tiko.trainschedules.model.Train;
-import fi.tamk.tiko.trainschedules.model.TrainStation;
 
 public class TabFragmentDeparture extends Fragment {
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
