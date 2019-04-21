@@ -1,13 +1,13 @@
 <resources>
     <string name="app_name">Finnish Train Schedules</string>
     <string name="search">TrainSchedules</string>
-    <string name="departureTIme">Lähtöaika</string>
-    <string name="train">Juna</string>
-    <string name="destination">Määränpää</string>
-    <string name="track">Raide</string>
-    <string name="departure">Lähtevät</string>
-    <string name="arrivals">Saapuvat</string>
-    <string name="arrival_time">Saapumisaika</string>
-    <string name="from">Lähtöasema</string>
-    <string name="search_hint">Juna-asema</string>
+    <string name="departureTIme">Departure time</string>
+    <string name="train">Train</string>
+    <string name="destination">Destination</string>
+    <string name="track">Track</string>
+    <string name="departure">Departure</string>
+    <string name="arrivals">Arrivals</string>
+    <string name="arrival_time">Arrival time</string>
+    <string name="from">From</string>
+    <string name="search_hint">Train station</string>
 </resources>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Suomen Juna-aikataulut</string>
+    <string name="search">Juna-aikataulut</string>
+    <string name="departureTIme">Lähtöaika</string>
+    <string name="train">Juna</string>
+    <string name="destination">Määränpää</string>
+    <string name="track">Raide</string>
+    <string name="departure">Lähtevät</string>
+    <string name="arrivals">Saapuvat</string>
+    <string name="arrival_time">Saapumisaika</string>
+    <string name="from">Lähtöasema</string>
+    <string name="search_hint">Juna-asema</string>
+</resources>
