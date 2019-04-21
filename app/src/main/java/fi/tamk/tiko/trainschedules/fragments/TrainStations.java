@@ -211,14 +211,14 @@ public class TrainStations extends Fragment {
                             stations.get(i).setStationName(stations.get(i).getStationName().split(" ")[0]);
                         }
                         newStations.add(stations.get(i));
-                        codeToStation.put(stations.get(i).getStationShortCode(),stations.get(i).getStationName());
                     }
+                    codeToStation.put(stations.get(i).getStationShortCode(),stations.get(i).getStationName());
                 }
                 mAdapter = new MyAdapter(newStations);
                 recyclerView.setAdapter(mAdapter);
 
             } else {
-                Toast.makeText(context, "NOT FOUND!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "No connection, try again later", Toast.LENGTH_LONG).show();
             }
         }
     }

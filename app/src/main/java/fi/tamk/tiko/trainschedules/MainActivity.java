@@ -83,10 +83,12 @@ public class MainActivity extends AppCompatActivity implements ChosenStation {
             Configuration config = new Configuration(getBaseContext().getResources().getConfiguration());
             if(getBaseContext().getResources().getConfiguration().getLocales().get(0).equals(new Locale("fi","FI"))){
                 //Log.d(this.getClass().getName(), "ACTIVITY CLIKED: 2");
+                Locale.setDefault(new Locale("en"));
                 config.setLocale(new Locale("en"));
                 item.setTitle("FI");
             } else {
                 //Log.d(this.getClass().getName(), "ACTIVITY CLIKED: 3");
+                Locale.setDefault(new Locale("fi","FI"));
                 config.setLocale(new Locale("fi","FI"));
                 item.setTitle("EN");
             }

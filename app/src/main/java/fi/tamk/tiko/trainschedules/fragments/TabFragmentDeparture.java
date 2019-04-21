@@ -1,6 +1,8 @@
 package fi.tamk.tiko.trainschedules.fragments;
 
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Paint;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -9,6 +11,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +36,7 @@ import java.util.List;
 import javax.net.ssl.HttpsURLConnection;
 
 import fi.tamk.tiko.trainschedules.R;
+import fi.tamk.tiko.trainschedules.TrainActivity;
 import fi.tamk.tiko.trainschedules.model.TimeTableRow;
 import fi.tamk.tiko.trainschedules.model.Train;
 
@@ -44,6 +48,7 @@ public class TabFragmentDeparture extends Fragment {
     private static RecyclerView.Adapter mAdapter;
     private static RecyclerView.LayoutManager layoutManager;
     private static Context context;
+    private static String station;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.board_fragment, container, false);
@@ -61,6 +66,7 @@ public class TabFragmentDeparture extends Fragment {
     }
 
     public void triggerFetch(String station) {
+        this.station = station;
         new AsyncFetch().execute(station);
     }
 
@@ -112,22 +118,26 @@ public class TabFragmentDeparture extends Fragment {
                     if (train.getTimeTableRows().get(0).getLiveEstimateTime() != null) {
                         String estTime = train.getTimeTableRows().get(0).getLiveEstimateTime().format(formatter);
                         ((TextView) holder.textView.findViewById(R.id.notice)).setText(estTime);
+                        ((TextView) holder.textView.findViewById(R.id.time)).setPaintFlags( Paint.STRIKE_THRU_TEXT_FLAG);
                     }
                 }
             }
 
-            //Log.d(this.getClass().getName(), "setting" + trainNumber);
-
-            //((TextView)holder.textView.findViewById(R.id.stationCode)).setText(dataSet.get(position).getStationShortCode());
-
-            /*holder.textView.setOnClickListener(new View.OnClickListener() {
+            holder.textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String stationCode = ((TextView) v.findViewById(R.id.stationCode)).getText().toString();
-                    Log.d(this.getClass().getName(), "Textview Clicked: " + stationCode);
-
+                    //Log.d(this.getClass().getName(), "layoyt Clicked: " + train.getTrainType() + " " + train.getTrainNumber());
+                    Intent intent = new Intent(context, TrainActivity.class);
+                    if (train.getTrainCategory().equalsIgnoreCase("Commuter")) {
+                        intent.putExtra("type", train.getCommuterLineID());
+                    } else {
+                        intent.putExtra("type", train.getTrainType());
+                    }
+                    intent.putExtra("number", train.getTrainNumber());
+                    intent.putExtra("station", station);
+                    context.startActivity(intent);
                 }
-            });*/
+            });
         }
 
         @Override
@@ -235,7 +245,7 @@ public class TabFragmentDeparture extends Fragment {
                 recyclerView.setAdapter(mAdapter);
 
             } else {
-                Toast.makeText(context, "NOT FOUND!", Toast.LENGTH_SHORT).show();
+                Toast.makeText(context, "No connection, try again later", Toast.LENGTH_LONG).show();
             }
         }
     }

@@ -11,4 +11,5 @@
     <string name="arrival_time">Saapumisaika</string>
     <string name="from">Lähtöasema</string>
     <string name="search_hint">Juna-asema</string>
+    <string name="station">Asema</string>
 </resources>

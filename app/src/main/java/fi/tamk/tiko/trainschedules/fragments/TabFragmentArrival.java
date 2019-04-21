@@ -1,6 +1,7 @@
 package fi.tamk.tiko.trainschedules.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -33,6 +34,7 @@ import java.util.List;
 import javax.net.ssl.HttpsURLConnection;
 
 import fi.tamk.tiko.trainschedules.R;
+import fi.tamk.tiko.trainschedules.TrainActivity;
 import fi.tamk.tiko.trainschedules.model.TimeTableRow;
 import fi.tamk.tiko.trainschedules.model.Train;
 
@@ -42,6 +44,7 @@ public class TabFragmentArrival extends Fragment {
     private static RecyclerView.Adapter mAdapter;
     private static RecyclerView.LayoutManager layoutManager;
     private static Context context;
+    private static String station;
 
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.board_fragment, container, false);
@@ -62,6 +65,7 @@ public class TabFragmentArrival extends Fragment {
     }
 
     public void triggerFetch(String station) {
+        this.station = station;
         new AsyncFetch().execute(station);
     }
 
@@ -116,18 +120,21 @@ public class TabFragmentArrival extends Fragment {
             }
 
 
-            //Log.d(this.getClass().getName(), "setting" + trainNumber);
-
-            //((TextView)holder.textView.findViewById(R.id.stationCode)).setText(dataSet.get(position).getStationShortCode());
-
-            /*holder.textView.setOnClickListener(new View.OnClickListener() {
+            holder.textView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    String stationCode = ((TextView) v.findViewById(R.id.stationCode)).getText().toString();
-                    Log.d(this.getClass().getName(), "Textview Clicked: " + stationCode);
-
+                    //Log.d(this.getClass().getName(), "layoyt Clicked: " + train.getTrainType() + " " + train.getTrainNumber());
+                    Intent intent = new Intent(context, TrainActivity.class);
+                    if (train.getTrainCategory().equalsIgnoreCase("Commuter")) {
+                        intent.putExtra("type", train.getCommuterLineID());
+                    } else {
+                        intent.putExtra("type", train.getTrainType());
+                    }
+                    intent.putExtra("number", train.getTrainNumber());
+                    intent.putExtra("station", station);
+                    context.startActivity(intent);
                 }
-            });*/
+            });
         }
 
         @Override

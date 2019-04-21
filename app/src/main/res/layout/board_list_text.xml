@@ -2,37 +2,43 @@
 <LinearLayout android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingBottom="10sp"
     xmlns:android="http://schemas.android.com/apk/res/android">
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
         android:textColor="@color/colorAccent"
-        android:id="@+id/notice"/>
+        android:id="@+id/notice"
+        android:textSize="15sp"/>
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1.2"
-        android:id="@+id/time"/>
+        android:id="@+id/time"
+        android:textSize="15sp"/>
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:id="@+id/train"/>
+        android:id="@+id/train"
+        android:textSize="15sp"/>
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1"
-        android:id="@+id/destination"/>
+        android:id="@+id/destination"
+        android:textSize="15sp"/>
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.5"
-        android:id="@+id/track"/>
+        android:id="@+id/track"
+        android:textSize="15sp"/>
 
 
 </LinearLayout>

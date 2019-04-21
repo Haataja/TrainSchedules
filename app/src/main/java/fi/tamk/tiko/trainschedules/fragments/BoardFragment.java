@@ -42,7 +42,7 @@ public class BoardFragment extends Fragment {
     }
 
     private void refresh() {
-        Log.i(this.getClass().getName(), "Refreshing!! " + stationCode);
+        //Log.i(this.getClass().getName(), "Refreshing!! " + stationCode);
         if (stationCode != null) {
             TabFragmentDeparture fragment = (TabFragmentDeparture) adapter.getItem(0);
             fragment.triggerFetch(stationCode);
