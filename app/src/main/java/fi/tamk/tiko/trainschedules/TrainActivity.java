@@ -41,6 +41,9 @@ import fi.tamk.tiko.trainschedules.fragments.TrainStations;
 import fi.tamk.tiko.trainschedules.model.TimeTableRow;
 import fi.tamk.tiko.trainschedules.model.Train;
 
+/**
+ * Activity that holds view of the train schedule.
+ */
 public class TrainActivity extends AppCompatActivity {
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
 
@@ -53,6 +56,10 @@ public class TrainActivity extends AppCompatActivity {
     private static RecyclerView.LayoutManager layoutManager;
     private static Context context;
 
+    /**
+     * Called when the activity is created.
+     * @param savedInstanceState Saved state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,11 +85,22 @@ public class TrainActivity extends AppCompatActivity {
         new AsyncFetch().execute(station);
     }
 
-
+    /**
+     * Adapter for this class RecycleView.
+     */
     static class TrainViewAdapter extends RecyclerView.Adapter<TrainViewAdapter.TrainViewHolder> {
+        /**
+         * Data set that is shown.
+         */
         private List<TimeTableRow> dataSet;
+        /**
+         * Tells if the next station that train will be stopping is set.
+         */
         private boolean next = false;
 
+        /**
+         * View holder for the recycle view.
+         */
         public class TrainViewHolder extends RecyclerView.ViewHolder {
 
             public LinearLayout textView;
@@ -98,7 +116,12 @@ public class TrainActivity extends AppCompatActivity {
             this.dataSet = dataSet;
         }
 
-
+        /**
+         * Creates view holder for the recycle view.
+         * @param parent parent view group
+         * @param viewType integer, not used
+         * @return View holder
+         */
         @Override
         public TrainViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // create a new view
@@ -108,7 +131,11 @@ public class TrainActivity extends AppCompatActivity {
             return vh;
         }
 
-
+        /**
+         * Binds the data item to the list item.
+         * @param holder Holder that holds the view for the items in list.
+         * @param position position on the list.
+         */
         @Override
         public void onBindViewHolder(TrainViewHolder holder, int position) {
             TimeTableRow ttr = dataSet.get(position);
@@ -131,19 +158,28 @@ public class TrainActivity extends AppCompatActivity {
                 }
             }
         }
-
+        /**
+         * Gets the number of items in the list.
+         * @return number of items
+         */
         @Override
         public int getItemCount() {
             return dataSet.size();
         }
     }
-
+    /**
+     * Async fetch for fetching data from the API.
+     */
     public class AsyncFetch extends AsyncTask<String, String, List<TimeTableRow>> {
         private InputStream in = null;
         private String BASE_URL = "https://rata.digitraffic.fi/api/v1/live-trains/station/";
         private String OPTIONS = "?arrived_trains=0&arriving_trains=100&departed_trains=0&departing_trains=100&include_nonstopping=false";
 
-
+        /**
+         * Fetch from the API.
+         * @param string name of the station
+         * @return List of time table rows.
+         */
         @Override
         protected List<TimeTableRow> doInBackground(String... string) {
             String resultString = "";
@@ -176,7 +212,11 @@ public class TrainActivity extends AppCompatActivity {
             //Log.d(this.getClass().getName(), "Mapping" + trains);
             return trains;
         }
-
+        /**
+         * Parses the raw json data to java list of java objects
+         * @param resultString json data in form of the string
+         * @return List of time table rows.
+         */
         private List<TimeTableRow> parseTrains(String resultString) {
             List<Train> trains = new ArrayList<>();
             try {
@@ -241,7 +281,10 @@ public class TrainActivity extends AppCompatActivity {
             return new ArrayList<>();
         }
 
-
+        /**
+         * Publishes the train list.
+         * @param trains List of trains.
+         */
         @Override
         protected void onPostExecute(List<TimeTableRow> trains) {
             if (trains != null) {

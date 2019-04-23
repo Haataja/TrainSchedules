@@ -17,15 +17,26 @@ import java.util.Locale;
 import fi.tamk.tiko.trainschedules.fragments.BoardFragment;
 import fi.tamk.tiko.trainschedules.fragments.TrainStations;
 
-
+/**
+ * Main activity that is started when the app is started. Holds the list of the staions
+ * or the list of stations and list of the trains.
+ */
 public class MainActivity extends AppCompatActivity implements ChosenStation {
-
+    /**
+     * Called when the activity is created.
+     * @param savedInstanceState Saved state.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main_activity);
     }
 
+    /**
+     * Creates the menu in the title bar.
+     * @param menu Menu that is inflated.
+     * @return boolean.
+     */
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
@@ -57,6 +68,11 @@ public class MainActivity extends AppCompatActivity implements ChosenStation {
         return super.onCreateOptionsMenu(menu);
     }
 
+    /**
+     * Communicates between the fragments the chosen station and its station code.
+     * @param stationName The name of the station.
+     * @param stationCode The code of the station.
+     */
     @Override
     public void itemSelected(String stationName,String stationCode) {
         BoardFragment fragment = (BoardFragment) getSupportFragmentManager().findFragmentById(R.id.fragmentRight);
@@ -71,6 +87,11 @@ public class MainActivity extends AppCompatActivity implements ChosenStation {
         }
     }
 
+    /**
+     * Called when one of the items in menu is selected.
+     * @param item Item that is selected.
+     * @return boolean.
+     */
     @Override
     public boolean onOptionsItemSelected(MenuItem item){
         super.onOptionsItemSelected(item);

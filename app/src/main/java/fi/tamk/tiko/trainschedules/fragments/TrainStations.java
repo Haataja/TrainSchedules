@@ -37,19 +37,34 @@ import fi.tamk.tiko.trainschedules.ChosenStation;
 import fi.tamk.tiko.trainschedules.R;
 import fi.tamk.tiko.trainschedules.model.TrainStation;
 
+/**
+ * Class that shows passenger traffic train stations.
+ */
 public class TrainStations extends Fragment {
     private static RecyclerView recyclerView;
     private static RecyclerView.Adapter mAdapter;
     private static RecyclerView.LayoutManager layoutManager;
     private static Context context;
     private static ChosenStation callBack;
+
+    /**
+     * Map that maps station short codes to the station full name.
+     */
     public static Map<String, String> codeToStation;
 
 
+    /**
+     * Gets the Recycle view adapter.
+     * @return Adapter.
+     */
     public static MyAdapter getAdapter() {
         return (MyAdapter) mAdapter;
     }
 
+    /**
+     * Called when fragment is created.
+     * @param savedInstanceState Saved state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -57,6 +72,13 @@ public class TrainStations extends Fragment {
         callBack = (ChosenStation) getActivity();
     }
 
+    /**
+     * Called when view of the fragment is created.
+     * @param inflater Inflater
+     * @param container Container
+     * @param savedInstanceState Saved state
+     * @return View
+     */
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -74,9 +96,17 @@ public class TrainStations extends Fragment {
         new AsyncFetch().execute();
         return view;
     }
-
+    /**
+     * Adapter for this class RecycleView.
+     */
     public static class MyAdapter extends RecyclerView.Adapter<MyAdapter.MyViewHolder> implements Filterable {
+        /**
+         * Data set that is shown.
+         */
         private List<TrainStation> dataSet;
+        /**
+         * Copy of the data set for searching purposes.
+         */
         private List<TrainStation> dataSetCopy;
 
         public class MyViewHolder extends RecyclerView.ViewHolder {
@@ -95,10 +125,20 @@ public class TrainStations extends Fragment {
             this.dataSetCopy = dataSet;
         }
 
+        /**
+         * Filters the recycle view.
+         * @return filtered list.
+         */
         @Override
         public Filter getFilter() {
             return new Filter() {
                 List<TrainStation> contactListFiltered;
+
+                /**
+                 * Performs filtering.
+                 * @param charSequence User input that filtering is based on.
+                 * @return filtered list.
+                 */
                 @Override
                 protected FilterResults performFiltering(CharSequence charSequence) {
                     String charString = charSequence.toString();
@@ -119,6 +159,11 @@ public class TrainStations extends Fragment {
                     return filterResults;
                 }
 
+                /**
+                 * Sets data set to filtered list.
+                 * @param charSequence  User input that filtering is based on.
+                 * @param filterResults filtered list.
+                 */
                 @Override
                 protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
                     dataSet = (ArrayList<TrainStation>) filterResults.values;
@@ -127,10 +172,14 @@ public class TrainStations extends Fragment {
             };
         }
 
-
+        /**
+        * Creates view holder for the recycle view.
+         * @param parent parent view group
+         * @param viewType integer, not used
+         * @return View holder
+         */
         @Override
-        public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent,
-                                                         int viewType) {
+        public MyAdapter.MyViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // create a new view
             LinearLayout v = (LinearLayout) LayoutInflater.from(parent.getContext())
                     .inflate(R.layout.list_text_view, parent, false);
@@ -138,7 +187,11 @@ public class TrainStations extends Fragment {
             return vh;
         }
 
-
+        /**
+         * Binds the data item to the list item.
+         * @param holder Holder that holds the view for the items in list.
+         * @param position position on the list.
+         */
         @Override
         public void onBindViewHolder(MyViewHolder holder, int position) {
             ((TextView)holder.textView.findViewById(R.id.stationName)).setText(dataSet.get(position).getStationName());
@@ -152,16 +205,27 @@ public class TrainStations extends Fragment {
             });
         }
 
+        /**
+         * Gets the number of items in the list.
+         * @return number of items
+         */
         @Override
         public int getItemCount() {
             return dataSet.size();
         }
     }
 
+    /**
+     * Async fetch for fetching data from the API.
+     */
     public static class AsyncFetch extends AsyncTask<String, String, List<TrainStation>> {
         private InputStream in = null;
         private String BASE_URL = "https://rata.digitraffic.fi/api/v1";
 
+        /**
+         * Fetch from the API.
+         * @return List of stations
+         */
         @Override
         protected List<TrainStation> doInBackground(String... string) {
             String resultString = "";
@@ -200,7 +264,10 @@ public class TrainStations extends Fragment {
             return stations;
         }
 
-
+        /**
+         * Publishes the station list.
+         * @param stations List of stations.
+         */
         @Override
         protected void onPostExecute(List<TrainStation> stations) {
             if (stations != null) {

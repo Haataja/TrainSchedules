@@ -38,6 +38,9 @@ import fi.tamk.tiko.trainschedules.TrainActivity;
 import fi.tamk.tiko.trainschedules.model.TimeTableRow;
 import fi.tamk.tiko.trainschedules.model.Train;
 
+/**
+ * Fragment that shows trains that are arriving to current station.
+ */
 public class TabFragmentArrival extends Fragment {
     private static DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
     private static RecyclerView recyclerView;
@@ -46,6 +49,13 @@ public class TabFragmentArrival extends Fragment {
     private static Context context;
     private static String station;
 
+    /**
+     * Called when view of the fragment is created.
+     * @param inflater Inflater
+     * @param container Container
+     * @param savedInstanceState Saved state
+     * @return View
+     */
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.board_fragment, container, false);
         ((TextView)view.findViewById(R.id.destination)).setText(getString(R.string.from));
@@ -64,15 +74,27 @@ public class TabFragmentArrival extends Fragment {
         return view;
     }
 
+    /**
+     * Triggers async fetch to the API. Sets station that is delivered for {@link TrainActivity}.
+     * @param station current station short code.
+     */
     public void triggerFetch(String station) {
         this.station = station;
         new AsyncFetch().execute(station);
     }
 
-
+    /**
+     * Adapter for this class RecycleView.
+     */
     static class TabRecycleViewAdapter extends RecyclerView.Adapter<TabRecycleViewAdapter.TabViewHolder> {
+        /**
+         * Data set that is shown.
+         */
         private List<Train> dataSet;
 
+        /**
+         * View holder for the recycle view.
+         */
         public class TabViewHolder extends RecyclerView.ViewHolder {
 
             public LinearLayout textView;
@@ -88,7 +110,12 @@ public class TabFragmentArrival extends Fragment {
             this.dataSet = dataSet;
         }
 
-
+        /**
+         * Creates view holder for the recycle view.
+         * @param parent parent view group
+         * @param viewType integer, not used
+         * @return View holder
+         */
         @Override
         public TabViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             // create a new view
@@ -98,7 +125,11 @@ public class TabFragmentArrival extends Fragment {
             return vh;
         }
 
-
+        /**
+         * Binds the data item to the list item.
+         * @param holder Holder that holds the view for the items in list.
+         * @param position position on the list.
+         */
         @Override
         public void onBindViewHolder(TabViewHolder holder, int position) {
             Train train = dataSet.get(position);
@@ -120,35 +151,44 @@ public class TabFragmentArrival extends Fragment {
             }
 
 
-            holder.textView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    //Log.d(this.getClass().getName(), "layoyt Clicked: " + train.getTrainType() + " " + train.getTrainNumber());
-                    Intent intent = new Intent(context, TrainActivity.class);
-                    if (train.getTrainCategory().equalsIgnoreCase("Commuter")) {
-                        intent.putExtra("type", train.getCommuterLineID());
-                    } else {
-                        intent.putExtra("type", train.getTrainType());
-                    }
-                    intent.putExtra("number", train.getTrainNumber());
-                    intent.putExtra("station", station);
-                    context.startActivity(intent);
+            holder.textView.setOnClickListener(v -> {
+                //Log.d(this.getClass().getName(), "layoyt Clicked: " + train.getTrainType() + " " + train.getTrainNumber());
+                Intent intent = new Intent(context, TrainActivity.class);
+                if (train.getTrainCategory().equalsIgnoreCase("Commuter")) {
+                    intent.putExtra("type", train.getCommuterLineID());
+                } else {
+                    intent.putExtra("type", train.getTrainType());
                 }
+                intent.putExtra("number", train.getTrainNumber());
+                intent.putExtra("station", station);
+                context.startActivity(intent);
             });
         }
 
+        /**
+         * Gets the number of items in the list.
+         * @return number of items
+         */
         @Override
         public int getItemCount() {
             return dataSet.size();
         }
     }
 
+    /**
+     * Async fetch for fetching data from the API.
+     */
     public class AsyncFetch extends AsyncTask<String, String, List<Train>> {
         private InputStream in = null;
         private String BASE_URL = "https://rata.digitraffic.fi/api/v1/live-trains/station/";
         private String OPTIONS = "?arrived_trains=0&arriving_trains=100&departed_trains=0&departing_trains=100&include_nonstopping=false";
 
 
+        /**
+         * Fetch from the API.
+         * @param string name of the station
+         * @return List of trains
+         */
         @Override
         protected List<Train> doInBackground(String... string) {
             String resultString = "";
@@ -179,6 +219,12 @@ public class TabFragmentArrival extends Fragment {
             return trains;
         }
 
+        /**
+         * Parses the raw json data to java list of java objects
+         * @param resultString json data in form of the string
+         * @param station current station
+         * @return List of trains.
+         */
         private List<Train> parseTrains(String resultString, String station) {
             List<Train> trains = new ArrayList<>();
             try {
@@ -232,6 +278,10 @@ public class TabFragmentArrival extends Fragment {
         }
 
 
+        /**
+         * Publishes the train list.
+         * @param trains List of trains.
+         */
         @Override
         protected void onPostExecute(List<Train> trains) {
             if (trains != null) {

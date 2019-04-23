@@ -16,6 +16,9 @@ import android.widget.TextView;
 import fi.tamk.tiko.trainschedules.R;
 import fi.tamk.tiko.trainschedules.TabAdapter;
 
+/**
+ * Fragment that holds two tabs and can be refreshed.
+ */
 public class BoardFragment extends Fragment {
     private String stationName;
     private String stationCode;
@@ -24,6 +27,13 @@ public class BoardFragment extends Fragment {
     private TabLayout tabLayout;
     private ViewPager viewPager;
 
+    /**
+     * Called when view of the fragment is created.
+     * @param inflater Inflater
+     * @param container Container
+     * @param savedInstanceState Saved state
+     * @return View
+     */
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.board_view, container, false);
         srl = view.findViewById(R.id.swiperefreshBoard);
@@ -41,6 +51,9 @@ public class BoardFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Calls the back API again with current station, shows refresh circle while fetching.
+     */
     private void refresh() {
         //Log.i(this.getClass().getName(), "Refreshing!! " + stationCode);
         if (stationCode != null) {
@@ -54,10 +67,18 @@ public class BoardFragment extends Fragment {
         srl.setRefreshing(false);
     }
 
+    /**
+     * Sets current station
+     * @param station Station name
+     */
     public void setStation(String station) {
         ((TextView) getView().findViewById(R.id.name)).setText(station);
     }
 
+    /**
+     * Sets current station short code
+     * @param stationCode Station short code
+     */
     public void setStationCode(String stationCode) {
         this.stationCode = stationCode;
         refresh();
